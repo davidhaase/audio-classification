@@ -14,7 +14,7 @@ from sklearn import metrics
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Convolution2D, MaxPooling2D
+from keras.layers import Convolution1D, Convolution2D, MaxPooling2D
 from keras.optimizers import Adam
 from keras.utils import np_utils
 
@@ -154,7 +154,6 @@ class Processor():
         predictions = self.model.predict_classes(X_predict)
         self.test_df['prediction_number'] = predictions
         self.test_df['prediction_label'] = self.lb.inverse_transform(predictions)
-        self.test_df.to_pickle('pickles/predictions_on_test.pkl')
 
 
     def run(self, num_epochs):
@@ -174,8 +173,10 @@ class Processor():
         num_labels = y_train.shape[1]
         filter_size = self.filter_size
         model = Sequential()
+        model.add(Dense(256, input_shape=(self.n_mfcc,)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.5))
 
-        model.add(Dense(256, input_shape=(40,)))
         model.add(Dense(256))
         model.add(Activation('relu'))
         model.add(Dropout(0.5))
